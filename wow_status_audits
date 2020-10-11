@@ -1,0 +1,37 @@
+import conn_config
+import requests
+
+# orderStatusCode UNA (Unassigned), WTP (Waiting to be Picked), PIP (Picking in Progress), WFE (Waiting for Export), EXP (Exporting), CMP (Complete), REV (Needs Review), PRC (Processing), NEW (Unprocessed), WFS (Waiting for Shipment)
+
+warehouse_list = ['Warehouse1', 'Warehouse2', 'Warehouse3', 'Warehouse4', 'Warehouse5', 'Warehouse6']
+status_list = ['UNA', 'WTP', 'PIP', 'WFE', 'EXP', 'CMP', 'REV', 'PRC', 'NEW', 'WFS']
+for wh in warehouse_list:
+      for st in status_list:
+          if st == 'UNA':
+              wow_status = 'Unassigned'
+          elif st == 'WTP':
+              wow_status = 'Waiting to be Picked'
+          elif st == 'PIP':
+              wow_status = 'Picking in Progress'
+          elif st == 'WFE':
+              wow_status = 'Waiting for Export'
+          elif st == 'EXP':
+              wow_status = 'Exporting'
+          elif st == 'CMP':
+              wow_status = 'Complete'
+          elif st == 'REV':
+              wow_status = 'Needs Review'
+          elif st == 'PRC':
+              wow_status = 'Processing'
+          elif st =='NEW':
+              wow_status = 'Unprocessed'
+          elif st == 'WFS':
+              wow_status = 'Waiting for Shipment'
+          else:
+              wow_status = 'Unknown'
+
+          resp = requests.get('https://dansons-api.withoutwire.com/integration/order/status?orderStatusCode='+st+'&warehouseName='+wh, headers={'Authorization': 'API KEY'})
+          #print("Unassigned "+str(len(resp.se_json())))
+          for todo_item in resp.json():
+              #print('{}'.format(todo_item['OrderNumber']))
+              conn_config.wowstatusupdates(todo_item['OrderNumber'], wow_status, wh)
